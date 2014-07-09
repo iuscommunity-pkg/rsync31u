@@ -42,8 +42,8 @@ package.
 
 
 %prep
-%setup -q
-%setup -q -b 1
+%setup -q -n %{real_name}-%{version}
+%setup -q -n %{real_name}-%{version} -b 1
 %{__chmod} -x support/*
 #Needed for compatibility with previous patched rsync versions
 %{__patch} -p1 -i patches/acls.diff
