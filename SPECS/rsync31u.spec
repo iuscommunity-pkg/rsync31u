@@ -108,6 +108,12 @@ package.
 
 
 %changelog
+* Wed Jul 09 2014 Carl George <carl.george@rackspace.com> - 3.1.1-1.ius
+- Port from Fedora rawhide (F18 for xinetd file) to IUS
+- Update urls
+- Macro additions/removals
+- Add el7 conditionals
+
 * Wed Jun 25 2014 Michal Luscon <mluscon@redhat.com> - 3.1.1-1
 - Update to latest upstream version 3.1.1
 
