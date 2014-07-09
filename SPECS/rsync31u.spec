@@ -4,10 +4,9 @@ Name: rsync
 Version: 3.1.1
 Release: 1.ius%{?dist}
 Group: Applications/Internet
-URL: http://rsync.samba.org/
-
-Source0: ftp://rsync.samba.org/pub/rsync/rsync-%{version}.tar.gz
-Source1: ftp://rsync.samba.org/pub/rsync/rsync-patches-%{version}.tar.gz
+URL: http://rsync.samba.org
+Source0: http://rsync.samba.org/ftp/rsync/src/rsync-%{version}.tar.gz
+Source1: http://rsync.samba.org/ftp/rsync/src/rsync-patches-%{version}.tar.gz
 Source2: rsyncd.socket
 Source3: rsyncd.service
 Source4: rsyncd.conf
