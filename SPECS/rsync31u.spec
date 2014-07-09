@@ -29,6 +29,10 @@ Source7: rsync.xinetd
 %endif
 License: GPLv3+
 Patch0: rsync-man.patch
+Provides: config(%{real_name}) = %{version}-%{release}
+Provides: %{real_name} = %{version}-%{release}
+Provides: %{real_name}(x86-64) = %{version}-%{release}
+Conflicts: %{real_name} < %{version}
 
 
 %description
