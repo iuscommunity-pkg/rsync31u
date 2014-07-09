@@ -4,6 +4,7 @@ Name: rsync
 Version: 3.1.1
 Release: 1.ius%{?dist}
 Group: Applications/Internet
+Vendor: IUS Community Project
 URL: http://rsync.samba.org
 Source0: http://rsync.samba.org/ftp/rsync/src/rsync-%{version}.tar.gz
 Source1: http://rsync.samba.org/ftp/rsync/src/rsync-patches-%{version}.tar.gz
