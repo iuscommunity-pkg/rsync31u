@@ -1,6 +1,8 @@
+%global real_name rsync
+%global ius_suffix 31u
 
 Summary: A program for synchronizing files over a network
-Name: rsync
+Name: %{real_name}%{?ius_suffix}
 Version: 3.1.1
 Release: 1.ius%{?dist}
 Group: Applications/Internet
@@ -13,7 +15,6 @@ Source3: rsyncd.service
 Source4: rsyncd.conf
 Source5: rsyncd.sysconfig
 Source6: rsyncd@.service
-
 BuildRequires: libacl-devel
 BuildRequires: libattr-devel
 BuildRequires: autoconf
@@ -23,7 +24,6 @@ Requires(post): systemd-units
 Requires(preun): systemd-units
 Requires(postun): systemd-units
 License: GPLv3+
-
 Patch0: rsync-man.patch
 
 %description
@@ -35,64 +35,57 @@ just as a more capable replacement for the rcp command. A technical
 report which describes the rsync algorithm is included in this
 package.
 
-%prep
-# TAG: for pre versions use
 
+%prep
 %setup -q
 %setup -q -b 1
-
-chmod -x support/*
-
+%{__chmod} -x support/*
 #Needed for compatibility with previous patched rsync versions
-patch -p1 -i patches/acls.diff
-patch -p1 -i patches/xattrs.diff
-
+%{__patch} -p1 -i patches/acls.diff
+%{__patch} -p1 -i patches/xattrs.diff
 #Enable --copy-devices parameter
-patch -p1 -i patches/copy-devices.diff
-
+%{__patch} -p1 -i patches/copy-devices.diff
 %patch0 -p1 -b .man
 
-%build
 
+%build
 %configure
 # --with-included-zlib=no temporary disabled because of #1043965
+%{__make} %{?_smp_mflags}
 
-make %{?_smp_mflags}
 
 %install
-rm -rf $RPM_BUILD_ROOT
-
 %makeinstall INSTALLCMD='install -p' INSTALLMAN='install -p'
-
-install -D -m644 %{SOURCE3} $RPM_BUILD_ROOT/%{_unitdir}/rsyncd.service
-install -D -m644 %{SOURCE2} $RPM_BUILD_ROOT/%{_unitdir}/rsyncd.socket
-install -D -m644 %{SOURCE4} $RPM_BUILD_ROOT/%{_sysconfdir}/rsyncd.conf
-install -D -m644 %{SOURCE5} $RPM_BUILD_ROOT/%{_sysconfdir}/sysconfig/rsyncd
-install -D -m644 %{SOURCE6} $RPM_BUILD_ROOT/%{_unitdir}/rsyncd@.service
+%{__install} -D -m644 %{SOURCE4} %{buildroot}/%{_sysconfdir}/%{real_name}d.conf
+%{__install} -D -m644 %{SOURCE5} %{buildroot}/%{_sysconfdir}/sysconfig/%{real_name}d
+%{__install} -D -m644 %{SOURCE2} %{buildroot}/%{_unitdir}/%{real_name}d.socket
+%{__install} -D -m644 %{SOURCE3} %{buildroot}/%{_unitdir}/%{real_name}d.service
+%{__install} -D -m644 %{SOURCE6} %{buildroot}/%{_unitdir}/%{real_name}d@.service
 
 %clean
-rm -rf $RPM_BUILD_ROOT
+%{__rm} -rf %{buildroot}
+
 
 %files
 %defattr(-,root,root)
 %doc COPYING NEWS OLDNEWS README support/ tech_report.tex
-%{_bindir}/%{name}
-%{_mandir}/man1/%{name}.1*
-%{_mandir}/man5/rsyncd.conf.5*
-%config(noreplace) %{_sysconfdir}/rsyncd.conf
-%config(noreplace) %{_sysconfdir}/sysconfig/rsyncd
-%{_unitdir}/rsyncd.socket
-%{_unitdir}/rsyncd.service
-%{_unitdir}/rsyncd@.service
+%{_bindir}/%{real_name}
+%{_mandir}/man1/%{real_name}.1*
+%{_mandir}/man5/%{real_name}d.conf.5*
+%config(noreplace) %{_sysconfdir}/%{real_name}d.conf
+%config(noreplace) %{_sysconfdir}/sysconfig/%{real_name}d
+%{_unitdir}/%{real_name}d.socket
+%{_unitdir}/%{real_name}d.service
+%{_unitdir}/%{real_name}d@.service
 
 %post
-%systemd_post rsyncd.service
+%systemd_post %{real_name}d.service
 
 %preun
-%systemd_preun rsyncd.service
+%systemd_preun %{real_name}d.service
 
 %postun
-%systemd_postun_with_restart rsyncd.service
+%systemd_postun_with_restart %{real_name}d.service
 
 %changelog
 * Wed Jun 25 2014 Michal Luscon <mluscon@redhat.com> - 3.1.1-1
