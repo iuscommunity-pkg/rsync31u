@@ -10,21 +10,26 @@ Vendor: IUS Community Project
 URL: http://rsync.samba.org
 Source0: http://rsync.samba.org/ftp/rsync/src/rsync-%{version}.tar.gz
 Source1: http://rsync.samba.org/ftp/rsync/src/rsync-patches-%{version}.tar.gz
-Source2: rsyncd.socket
-Source3: rsyncd.service
-Source4: rsyncd.conf
-Source5: rsyncd.sysconfig
-Source6: rsyncd@.service
+Source2: rsyncd.conf
+Source3: rsyncd.sysconfig
 BuildRequires: libacl-devel
 BuildRequires: libattr-devel
 BuildRequires: autoconf
 BuildRequires: popt-devel
+%if 0%{?rhel} >= 7
 BuildRequires: systemd-units
 Requires(post): systemd-units
 Requires(preun): systemd-units
 Requires(postun): systemd-units
+Source4: rsyncd.socket
+Source5: rsyncd.service
+Source6: rsyncd@.service
+%else
+Source7: rsync.xinetd
+%endif
 License: GPLv3+
 Patch0: rsync-man.patch
+
 
 %description
 Rsync uses a reliable algorithm to bring remote and host files into
@@ -56,11 +61,16 @@ package.
 
 %install
 %makeinstall INSTALLCMD='install -p' INSTALLMAN='install -p'
-%{__install} -D -m644 %{SOURCE4} %{buildroot}/%{_sysconfdir}/%{real_name}d.conf
-%{__install} -D -m644 %{SOURCE5} %{buildroot}/%{_sysconfdir}/sysconfig/%{real_name}d
-%{__install} -D -m644 %{SOURCE2} %{buildroot}/%{_unitdir}/%{real_name}d.socket
-%{__install} -D -m644 %{SOURCE3} %{buildroot}/%{_unitdir}/%{real_name}d.service
+%{__install} -D -m644 %{SOURCE2} %{buildroot}/%{_sysconfdir}/%{real_name}d.conf
+%{__install} -D -m644 %{SOURCE3} %{buildroot}/%{_sysconfdir}/sysconfig/%{real_name}d
+%if 0%{?rhel} >= 7
+%{__install} -D -m644 %{SOURCE4} %{buildroot}/%{_unitdir}/%{real_name}d.socket
+%{__install} -D -m644 %{SOURCE5} %{buildroot}/%{_unitdir}/%{real_name}d.service
 %{__install} -D -m644 %{SOURCE6} %{buildroot}/%{_unitdir}/%{real_name}d@.service
+%else
+%{__install} -D -m644 %{SOURCE7} %{buildroot}/%{_sysconfdir}/xinetd.d/%{real_name}
+%endif
+
 
 %clean
 %{__rm} -rf %{buildroot}
@@ -74,9 +84,16 @@ package.
 %{_mandir}/man5/%{real_name}d.conf.5*
 %config(noreplace) %{_sysconfdir}/%{real_name}d.conf
 %config(noreplace) %{_sysconfdir}/sysconfig/%{real_name}d
+%if 0%{?rhel} >= 7
 %{_unitdir}/%{real_name}d.socket
 %{_unitdir}/%{real_name}d.service
 %{_unitdir}/%{real_name}d@.service
+%else
+%config(noreplace) %{_sysconfdir}/xinetd.d/%{real_name}
+%endif
+
+
+%if 0%{?rhel} >= 7
 
 %post
 %systemd_post %{real_name}d.service
@@ -86,6 +103,9 @@ package.
 
 %postun
 %systemd_postun_with_restart %{real_name}d.service
+
+%endif
+
 
 %changelog
 * Wed Jun 25 2014 Michal Luscon <mluscon@redhat.com> - 3.1.1-1
