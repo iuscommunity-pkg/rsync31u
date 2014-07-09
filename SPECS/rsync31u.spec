@@ -1,20 +1,13 @@
-%global _hardened_build 1
-
-%define isprerelease 0
-
-%if %isprerelease
-%define prerelease pre1
-%endif
 
 Summary: A program for synchronizing files over a network
 Name: rsync
 Version: 3.1.1
-Release: 1%{?prerelease}%{?dist}
+Release: 1.ius%{?dist}
 Group: Applications/Internet
 URL: http://rsync.samba.org/
 
-Source0: ftp://rsync.samba.org/pub/rsync/rsync-%{version}%{?prerelease}.tar.gz
-Source1: ftp://rsync.samba.org/pub/rsync/rsync-patches-%{version}%{?prerelease}.tar.gz
+Source0: ftp://rsync.samba.org/pub/rsync/rsync-%{version}.tar.gz
+Source1: ftp://rsync.samba.org/pub/rsync/rsync-patches-%{version}.tar.gz
 Source2: rsyncd.socket
 Source3: rsyncd.service
 Source4: rsyncd.conf
@@ -42,13 +35,8 @@ package.
 %prep
 # TAG: for pre versions use
 
-%if %isprerelease
-%setup -q -n rsync-%{version}%{?prerelease}
-%setup -q -b 1 -n rsync-%{version}%{?prerelease}
-%else
 %setup -q
 %setup -q -b 1
-%endif
 
 chmod -x support/*
 
