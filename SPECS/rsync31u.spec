@@ -13,8 +13,11 @@ Source4: rsyncd.conf
 Source5: rsyncd.sysconfig
 Source6: rsyncd@.service
 
-BuildRequires: libacl-devel, libattr-devel, autoconf, popt-devel, systemd-units
-#Requires: zlib
+BuildRequires: libacl-devel
+BuildRequires: libattr-devel
+BuildRequires: autoconf
+BuildRequires: popt-devel
+BuildRequires: systemd-units
 Requires(post): systemd-units
 Requires(preun): systemd-units
 Requires(postun): systemd-units
