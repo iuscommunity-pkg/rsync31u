@@ -4,7 +4,7 @@
 Summary: A program for synchronizing files over a network
 Name: %{real_name}%{?ius_suffix}
 Version: 3.1.1
-Release: 1.ius%{?dist}
+Release: 2.ius%{?dist}
 Group: Applications/Internet
 Vendor: IUS Community Project
 URL: http://rsync.samba.org
@@ -15,7 +15,12 @@ Source3: rsyncd.sysconfig
 BuildRequires: libacl-devel
 BuildRequires: libattr-devel
 BuildRequires: autoconf
+%if 0%{?rhel} <= 5
+BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+BuildRequires: popt
+%else
 BuildRequires: popt-devel
+%endif
 %if 0%{?rhel} >= 7
 BuildRequires: systemd-units
 Requires(post): systemd-units
@@ -64,6 +69,7 @@ package.
 
 
 %install
+%{__rm} -rf %{buildroot}
 %makeinstall INSTALLCMD='install -p' INSTALLMAN='install -p'
 %{__install} -D -m644 %{SOURCE2} %{buildroot}/%{_sysconfdir}/%{real_name}d.conf
 %{__install} -D -m644 %{SOURCE3} %{buildroot}/%{_sysconfdir}/sysconfig/%{real_name}d
@@ -112,6 +118,9 @@ package.
 
 
 %changelog
+* Fri Jul 11 2014 Carl George <carl.george@rackspace.com> - 3.1.1-2.ius
+- Add support for el5
+
 * Wed Jul 09 2014 Carl George <carl.george@rackspace.com> - 3.1.1-1.ius
 - Port from Fedora rawhide (F18 for xinetd file) to IUS
 - Update urls
