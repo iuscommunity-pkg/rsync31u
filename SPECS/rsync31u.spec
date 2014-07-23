@@ -1,10 +1,20 @@
 %global real_name rsync
 %global ius_suffix 31u
 
+%if 0%{?rhel} <= 6
+%filter_provides_in %{_docdir}
+%filter_requires_in %{_docdir}
+%filter_setup
+%endif
+
+%if 0%{?rhel} >= 7
+%{?perl_default_filter}
+%endif
+
 Summary: A program for synchronizing files over a network
 Name: %{real_name}%{?ius_suffix}
 Version: 3.1.1
-Release: 2.ius%{?dist}
+Release: 3.ius%{?dist}
 Group: Applications/Internet
 Vendor: IUS Community Project
 URL: http://rsync.samba.org
@@ -53,10 +63,15 @@ package.
 %prep
 %setup -q -n %{real_name}-%{version}
 %setup -q -n %{real_name}-%{version} -b 1
+
+%if 0%{?rhel} <= 5
 %{__chmod} -x support/*
+%endif
+
 #Needed for compatibility with previous patched rsync versions
 %{__patch} -p1 -i patches/acls.diff
 %{__patch} -p1 -i patches/xattrs.diff
+
 #Enable --copy-devices parameter
 %{__patch} -p1 -i patches/copy-devices.diff
 %patch0 -p1 -b .man
@@ -82,12 +97,17 @@ package.
 %endif
 
 
+%if 0%{?rhel} >= 6
+%check
+%{__make} test
+%endif
+
+
 %{?el5:%clean}
 %{?el5:%{__rm} -rf %{buildroot}}
 
 
 %files
-%defattr(-,root,root)
 %doc COPYING NEWS OLDNEWS README support/ tech_report.tex
 %{_bindir}/%{real_name}
 %{_mandir}/man1/%{real_name}.1*
@@ -118,6 +138,10 @@ package.
 
 
 %changelog
+* Tue Jul 22 2014 Carl George <carl.george@rackspace.com> - 3.1.1-3.ius
+- Correctly disable perl auto-dependency generation
+- Enable the test suite
+
 * Fri Jul 11 2014 Carl George <carl.george@rackspace.com> - 3.1.1-2.ius
 - Add support for el5
 
