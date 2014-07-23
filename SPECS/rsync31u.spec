@@ -2,9 +2,11 @@
 %global ius_suffix 31u
 
 %if 0%{?rhel} <= 6
+%{?filter_setup:
 %filter_provides_in %{_docdir}
 %filter_requires_in %{_docdir}
 %filter_setup
+}
 %endif
 
 %if 0%{?rhel} >= 7
