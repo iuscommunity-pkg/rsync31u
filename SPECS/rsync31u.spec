@@ -15,8 +15,8 @@
 
 Summary: A program for synchronizing files over a network
 Name: %{real_name}%{?ius_suffix}
-Version: 3.1.1
-Release: 3.ius%{?dist}
+Version: 3.1.2
+Release: 1.ius%{?dist}
 Group: Applications/Internet
 Vendor: IUS Community Project
 URL: http://rsync.samba.org
@@ -140,6 +140,9 @@ package.
 
 
 %changelog
+* Tue Dec 22 2015 Ben Harper <ben.harper@rackspace.com> - 3.1.2-1.ius
+- Latest upstream
+
 * Tue Jul 22 2014 Carl George <carl.george@rackspace.com> - 3.1.1-3.ius
 - Correctly disable perl auto-dependency generation
 - Enable the test suite
