@@ -1,55 +1,42 @@
-%global real_name rsync
-%global ius_suffix 31u
-
-%if 0%{?rhel} <= 6
-%{?filter_setup:
-%filter_provides_in %{_docdir}
-%filter_requires_in %{_docdir}
-%filter_setup
-}
-%endif
-
-%if 0%{?rhel} >= 7
-%{?perl_default_filter}
+%if 0%{?fedora} >= 19 || 0%{?rhel} >= 7
+%bcond_without systemd
+%else
+%bcond_with systemd
 %endif
 
 Summary: A program for synchronizing files over a network
-Name: %{real_name}%{?ius_suffix}
+Name: rsync31u
 Version: 3.1.2
-Release: 1.ius%{?dist}
-Group: Applications/Internet
-Vendor: IUS Community Project
+Release: 2.ius%{?dist}
+License: GPLv3+
 URL: http://rsync.samba.org
 Source0: http://rsync.samba.org/ftp/rsync/src/rsync-%{version}.tar.gz
 Source1: http://rsync.samba.org/ftp/rsync/src/rsync-patches-%{version}.tar.gz
 Source2: rsyncd.conf
 Source3: rsyncd.sysconfig
+Source4: rsyncd.socket
+Source5: rsyncd.service
+Source6: rsyncd@.service
+Source7: rsync.xinetd
+Patch0: rsync-man.patch
+
 BuildRequires: libacl-devel
 BuildRequires: libattr-devel
 BuildRequires: autoconf
-%if 0%{?rhel} <= 5
-BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-BuildRequires: popt
-%else
 BuildRequires: popt-devel
-%endif
-%if 0%{?rhel} >= 7
+%if %{with systemd}
 BuildRequires: systemd-units
 Requires(post): systemd-units
 Requires(preun): systemd-units
 Requires(postun): systemd-units
-Source4: rsyncd.socket
-Source5: rsyncd.service
-Source6: rsyncd@.service
-%else
-Source7: rsync.xinetd
 %endif
-License: GPLv3+
-Patch0: rsync-man.patch
-Provides: config(%{real_name}) = %{version}-%{release}
-Provides: %{real_name} = %{version}-%{release}
-Provides: %{real_name}%{?_isa} = %{version}-%{release}
-Conflicts: %{real_name} < %{version}
+
+Provides: rsync = %{version}-%{release}
+Provides: rsync%{?_isa} = %{version}-%{release}
+Conflicts: rsync < %{version}
+
+%{?filter_requires_in:%filter_requires_in %{_docdir}}
+%{?filter_setup}
 
 
 %description
@@ -63,12 +50,8 @@ package.
 
 
 %prep
-%setup -q -n %{real_name}-%{version}
-%setup -q -n %{real_name}-%{version} -b 1
-
-%if 0%{?rhel} <= 5
-%{__chmod} -x support/*
-%endif
+%setup -q -n rsync-%{version}
+%setup -q -n rsync-%{version} -b 1
 
 #Needed for compatibility with previous patched rsync versions
 %{__patch} -p1 -i patches/acls.diff
@@ -76,6 +59,7 @@ package.
 
 #Enable --copy-devices parameter
 %{__patch} -p1 -i patches/copy-devices.diff
+
 %patch0 -p1 -b .man
 
 
@@ -86,60 +70,56 @@ package.
 
 
 %install
-%{__rm} -rf %{buildroot}
-%makeinstall INSTALLCMD='install -p' INSTALLMAN='install -p'
-%{__install} -D -m644 %{SOURCE2} %{buildroot}/%{_sysconfdir}/%{real_name}d.conf
-%{__install} -D -m644 %{SOURCE3} %{buildroot}/%{_sysconfdir}/sysconfig/%{real_name}d
-%if 0%{?rhel} >= 7
-%{__install} -D -m644 %{SOURCE4} %{buildroot}/%{_unitdir}/%{real_name}d.socket
-%{__install} -D -m644 %{SOURCE5} %{buildroot}/%{_unitdir}/%{real_name}d.service
-%{__install} -D -m644 %{SOURCE6} %{buildroot}/%{_unitdir}/%{real_name}d@.service
+%make_install
+%{__install} -D -m644 %{SOURCE2} %{buildroot}%{_sysconfdir}/rsyncd.conf
+%if %{with systemd}
+%{__install} -D -m644 %{SOURCE3} %{buildroot}%{_sysconfdir}/sysconfig/rsyncd
+%{__install} -D -m644 %{SOURCE4} %{buildroot}%{_unitdir}/rsyncd.socket
+%{__install} -D -m644 %{SOURCE5} %{buildroot}%{_unitdir}/rsyncd.service
+%{__install} -D -m644 %{SOURCE6} %{buildroot}%{_unitdir}/rsyncd@.service
 %else
-%{__install} -D -m644 %{SOURCE7} %{buildroot}/%{_sysconfdir}/xinetd.d/%{real_name}
+%{__install} -D -m644 %{SOURCE7} %{buildroot}%{_sysconfdir}/xinetd.d/rsync
 %endif
 
 
-%if 0%{?rhel} >= 6
 %check
 %{__make} test
+
+
+%if %{with systemd}
+%post
+%systemd_post rsyncd.service
+
+
+%preun
+%systemd_preun rsyncd.service
+
+
+%postun
+%systemd_postun_with_restart rsyncd.service
 %endif
-
-
-%{?el5:%clean}
-%{?el5:%{__rm} -rf %{buildroot}}
 
 
 %files
 %doc COPYING NEWS OLDNEWS README support/ tech_report.tex
-%{_bindir}/%{real_name}
-%{_mandir}/man1/%{real_name}.1*
-%{_mandir}/man5/%{real_name}d.conf.5*
-%config(noreplace) %{_sysconfdir}/%{real_name}d.conf
-%config(noreplace) %{_sysconfdir}/sysconfig/%{real_name}d
-%if 0%{?rhel} >= 7
-%{_unitdir}/%{real_name}d.socket
-%{_unitdir}/%{real_name}d.service
-%{_unitdir}/%{real_name}d@.service
+%{_bindir}/rsync
+%{_mandir}/man1/rsync.1*
+%{_mandir}/man5/rsyncd.conf.5*
+%config(noreplace) %{_sysconfdir}/rsyncd.conf
+%if %{with systemd}
+%config(noreplace) %{_sysconfdir}/sysconfig/rsyncd
+%{_unitdir}/rsyncd.socket
+%{_unitdir}/rsyncd.service
+%{_unitdir}/rsyncd@.service
 %else
-%config(noreplace) %{_sysconfdir}/xinetd.d/%{real_name}
-%endif
-
-
-%if 0%{?rhel} >= 7
-
-%post
-%systemd_post %{real_name}d.service
-
-%preun
-%systemd_preun %{real_name}d.service
-
-%postun
-%systemd_postun_with_restart %{real_name}d.service
-
+%config(noreplace) %{_sysconfdir}/xinetd.d/rsync
 %endif
 
 
 %changelog
+* Wed Apr 05 2017 Carl George <carl.george@rackspace.com> - 3.1.2-2.ius
+- Drop EL5 support
+
 * Tue Dec 22 2015 Ben Harper <ben.harper@rackspace.com> - 3.1.2-1.ius
 - Latest upstream
 
