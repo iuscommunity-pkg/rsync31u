@@ -26,12 +26,6 @@ BuildRequires: libacl-devel
 BuildRequires: libattr-devel
 BuildRequires: autoconf
 BuildRequires: popt-devel
-%if %{with systemd}
-BuildRequires: systemd-units
-Requires(post): systemd-units
-Requires(preun): systemd-units
-Requires(postun): systemd-units
-%endif
 
 Provides: rsync = %{version}-%{release}
 Provides: rsync%{?_isa} = %{version}-%{release}
@@ -49,6 +43,27 @@ files. Rsync is often used as a very powerful mirroring process or
 just as a more capable replacement for the rcp command. A technical
 report which describes the rsync algorithm is included in this
 package.
+
+
+%package daemon
+Summary: Service for anonymous access to rsync
+BuildArch: noarch
+Requires: %{name} = %{version}-%{release}
+%if %{with systemd}
+BuildRequires: systemd
+Requires(post): systemd
+Requires(preun): systemd
+Requires(postun): systemd
+%else
+Requires: xinetd
+%endif
+Provides: rsync-daemon = %{version}-%{release}
+Conflicts: rsync-daemon < %{version}
+
+
+%description daemon
+Rsync can be used to offer read only access to anonymous clients. This
+package provides the anonymous rsync service.
 
 
 %prep
@@ -107,6 +122,9 @@ package.
 %doc NEWS OLDNEWS README support/ tech_report.tex
 %{_bindir}/rsync
 %{_mandir}/man1/rsync.1*
+
+
+%files daemon
 %{_mandir}/man5/rsyncd.conf.5*
 %config(noreplace) %{_sysconfdir}/rsyncd.conf
 %if %{with systemd}
@@ -125,6 +143,7 @@ package.
 - Update source URLs
 - Install license properly
 - Re-add _hardened_build flag
+- Add daemon subpackage, borrowed from Fedora
 
 * Tue Dec 22 2015 Ben Harper <ben.harper@rackspace.com> - 3.1.2-1.ius
 - Latest upstream
