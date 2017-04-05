@@ -4,6 +4,8 @@
 %bcond_with systemd
 %endif
 
+%global _hardened_build 1
+
 Summary: A program for synchronizing files over a network
 Name: rsync31u
 Version: 3.1.2
@@ -122,6 +124,7 @@ package.
 - Drop EL5 support
 - Update source URLs
 - Install license properly
+- Re-add _hardened_build flag
 
 * Tue Dec 22 2015 Ben Harper <ben.harper@rackspace.com> - 3.1.2-1.ius
 - Latest upstream
