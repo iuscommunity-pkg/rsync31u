@@ -101,7 +101,8 @@ package.
 
 
 %files
-%doc COPYING NEWS OLDNEWS README support/ tech_report.tex
+%license COPYING
+%doc NEWS OLDNEWS README support/ tech_report.tex
 %{_bindir}/rsync
 %{_mandir}/man1/rsync.1*
 %{_mandir}/man5/rsyncd.conf.5*
@@ -120,6 +121,7 @@ package.
 * Wed Apr 05 2017 Carl George <carl.george@rackspace.com> - 3.1.2-2.ius
 - Drop EL5 support
 - Update source URLs
+- Install license properly
 
 * Tue Dec 22 2015 Ben Harper <ben.harper@rackspace.com> - 3.1.2-1.ius
 - Latest upstream
