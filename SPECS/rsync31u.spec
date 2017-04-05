@@ -10,8 +10,8 @@ Version: 3.1.2
 Release: 2.ius%{?dist}
 License: GPLv3+
 URL: http://rsync.samba.org
-Source0: http://rsync.samba.org/ftp/rsync/src/rsync-%{version}.tar.gz
-Source1: http://rsync.samba.org/ftp/rsync/src/rsync-patches-%{version}.tar.gz
+Source0: https://download.samba.org/pub/rsync/src/rsync-%{version}.tar.gz
+Source1: https://download.samba.org/pub/rsync/src/rsync-patches-%{version}.tar.gz
 Source2: rsyncd.conf
 Source3: rsyncd.sysconfig
 Source4: rsyncd.socket
@@ -119,6 +119,7 @@ package.
 %changelog
 * Wed Apr 05 2017 Carl George <carl.george@rackspace.com> - 3.1.2-2.ius
 - Drop EL5 support
+- Update source URLs
 
 * Tue Dec 22 2015 Ben Harper <ben.harper@rackspace.com> - 3.1.2-1.ius
 - Latest upstream
