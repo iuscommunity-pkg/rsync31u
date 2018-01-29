@@ -71,11 +71,11 @@ package provides the anonymous rsync service.
 %setup -q -n rsync-%{version} -b 1
 
 #Needed for compatibility with previous patched rsync versions
-%{__patch} -p1 -i patches/acls.diff
-%{__patch} -p1 -i patches/xattrs.diff
+patch -p1 -i patches/acls.diff
+patch -p1 -i patches/xattrs.diff
 
 #Enable --copy-devices parameter
-%{__patch} -p1 -i patches/copy-devices.diff
+patch -p1 -i patches/copy-devices.diff
 
 %patch0 -p1 -b .man
 
@@ -83,24 +83,24 @@ package provides the anonymous rsync service.
 %build
 %configure
 # --with-included-zlib=no temporary disabled because of #1043965
-%{__make} %{?_smp_mflags}
+make %{?_smp_mflags}
 
 
 %install
 %make_install
-%{__install} -D -m644 %{SOURCE2} %{buildroot}%{_sysconfdir}/rsyncd.conf
+install -D -m644 %{SOURCE2} %{buildroot}%{_sysconfdir}/rsyncd.conf
 %if %{with systemd}
-%{__install} -D -m644 %{SOURCE3} %{buildroot}%{_sysconfdir}/sysconfig/rsyncd
-%{__install} -D -m644 %{SOURCE4} %{buildroot}%{_unitdir}/rsyncd.socket
-%{__install} -D -m644 %{SOURCE5} %{buildroot}%{_unitdir}/rsyncd.service
-%{__install} -D -m644 %{SOURCE6} %{buildroot}%{_unitdir}/rsyncd@.service
+install -D -m644 %{SOURCE3} %{buildroot}%{_sysconfdir}/sysconfig/rsyncd
+install -D -m644 %{SOURCE4} %{buildroot}%{_unitdir}/rsyncd.socket
+install -D -m644 %{SOURCE5} %{buildroot}%{_unitdir}/rsyncd.service
+install -D -m644 %{SOURCE6} %{buildroot}%{_unitdir}/rsyncd@.service
 %else
-%{__install} -D -m644 %{SOURCE7} %{buildroot}%{_sysconfdir}/xinetd.d/rsync
+install -D -m644 %{SOURCE7} %{buildroot}%{_sysconfdir}/xinetd.d/rsync
 %endif
 
 
 %check
-%{__make} test
+make test
 
 
 %if %{with systemd}
