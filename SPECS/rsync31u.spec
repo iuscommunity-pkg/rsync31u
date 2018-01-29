@@ -8,8 +8,8 @@
 
 Summary: A program for synchronizing files over a network
 Name: rsync31u
-Version: 3.1.2
-Release: 2.ius%{?dist}
+Version: 3.1.3
+Release: 1.ius%{?dist}
 License: GPLv3+
 URL: http://rsync.samba.org
 Source0: https://download.samba.org/pub/rsync/src/rsync-%{version}.tar.gz
@@ -136,6 +136,9 @@ make test
 
 
 %changelog
+* Mon Jan 29 2018 Carl George <carl@george.computer> - 3.1.3-1.ius
+- Latest version
+
 * Wed Apr 05 2017 Carl George <carl.george@rackspace.com> - 3.1.2-2.ius
 - Drop EL5 support
 - Update source URLs
