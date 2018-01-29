@@ -102,15 +102,15 @@ make test
 
 
 %if %{with systemd}
-%post
+%post daemon
 %systemd_post rsyncd.service
 
 
-%preun
+%preun daemon
 %systemd_preun rsyncd.service
 
 
-%postun
+%postun daemon
 %systemd_postun_with_restart rsyncd.service
 %endif
 
@@ -138,6 +138,7 @@ make test
 %changelog
 * Mon Jan 29 2018 Carl George <carl@george.computer> - 3.1.3-1.ius
 - Latest version
+- Move scriptlets to daemon package (Fedora rhbz#1459681)
 
 * Wed Apr 05 2017 Carl George <carl.george@rackspace.com> - 3.1.2-2.ius
 - Drop EL5 support
