@@ -51,9 +51,7 @@ BuildArch: noarch
 Requires: %{name} = %{version}-%{release}
 %if %{with systemd}
 BuildRequires: systemd
-Requires(post): systemd
-Requires(preun): systemd
-Requires(postun): systemd
+%{?systemd_requires}
 %else
 Requires: xinetd
 %endif
@@ -83,7 +81,7 @@ patch -p1 -i patches/copy-devices.diff
 %build
 %configure
 # --with-included-zlib=no temporary disabled because of #1043965
-make %{?_smp_mflags}
+%make_build
 
 
 %install
